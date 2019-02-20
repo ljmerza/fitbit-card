@@ -1,0 +1,9 @@
+{
+  "fitbit-card": {
+    "updated_at": "2019-02-30",
+    "version": "1.0.0",
+    "remote_location": "https://raw.githubusercontent.com/ljmerza/fitbit-card/master/fitbit-card.js",
+    "visit_repo": "https://github.com/ljmerza/fitbit-card",
+    "changelog": "https://github.com/ljmerza/fitbit-card/releases/latest"
+  }
+}

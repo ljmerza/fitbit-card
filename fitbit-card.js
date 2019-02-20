@@ -1,7 +1,10 @@
-var LitElement = LitElement || Object.getPrototypeOf(customElements.get("hui-error-entity-row"));
-var html = LitElement.prototype.html;
+import { LitElement, html } from 'lit-element';
+import style from './style';
 
-class Card extends LitElement {
+class FitbitCard extends LitElement {
+    constructor() {
+        super();
+    }
 
     static get properties() {
         return {
@@ -10,16 +13,23 @@ class Card extends LitElement {
         };
     }
 
-    constructor() {
-        super();
-    }
-
     setConfig(config) {
-        if (!config.entity) throw Error(`entity required.`);
-
         this.config = {
+            title: `Fitbit Statistics`,
             ...config
         };
+    }
+
+    /**
+	 * get the current size of the card
+	 * @return {Number}
+	 */
+    getCardSize() {
+        return 1;
+    }
+
+    static get styles() {
+        return style;
     }
 
     /**
@@ -27,44 +37,87 @@ class Card extends LitElement {
      * @return {TemplateResult}
      */
     render() {
-        html`
-      <ha-card>
-        <style>${this.renderStyle()}</style>
-        ${this.createHeader()}
-        test
-      </ha-card>
-    `;
+        return html`
+			<ha-card>
+				<div class='fitbit-card__header'>
+                    ${this.config.title}
+                </div>
+				${this.generateSensorCard(90, 'red', 3000)}
+			</ha-card>
+		`;
     }
 
-    /**
-     * get the current size of the card
-     * @return {Number}
-     */
-    getCardSize() {
-        return 1;
+    get fitbitStates() {
+        return Object.values(this.__hass.states).filter(state => {
+            return state.attributes && state.attributes.attribution && /Fitbit/.test(state.attributes.attribution);
+        });
+    }
+
+    generateSensorCard(progress, color, text) {
+        return html`
+			<fitbit-progress-ring 
+				stroke="4" 
+				radius="30" 
+				progress="${progress}" 
+				color="${color}"
+				text="${text}"
+			>
+			</fitbit-progress-ring>
+		`;
+    }
+}
+
+customElements.define('fitbit-card', FitbitCard);
+
+
+class FitbitProgressRing extends LitElement {
+    constructor() {
+        super();
+    }
+
+    static get properties() {
+        return {
+            radius: String,
+            stroke: String,
+            color: String,
+            progress: String,
+            text: String,
+        }
     }
 
     static get styles() {
-
+        return style;
     }
 
-    /**
-     * generates the CSS styles for this card
-     * @return {TemplateResult}
-     */
-    renderStyle() {
+    render() {
+        const normalizedRadius = this.radius - this.stroke * 2;
+        this._circumference = normalizedRadius * 2 * Math.PI;
+
         return html`
-        ha-card {
-          padding: 16px;
-        }
-    `;
+			<svg
+				height="${this.radius * 2}"
+				width="${this.radius * 2}"
+			>
+				<circle
+					stroke="${this.color}"
+					stroke-dasharray="${this._circumference} ${this._circumference}"
+					style="stroke-dashoffset:${this._circumference}"
+					stroke-width="${this.stroke}"
+					fill="transparent"
+					r="${normalizedRadius}"
+					cx="${this.radius}"
+					cy="${this.radius}"
+				/>
+				<text x="50%" y="50%" text-anchor="middle" fill="black" dy=".3em">${this.text}</text>
+			</svg>
+		`;
     }
 
-    createHeader() {
-        return html`
-    `;
+    updated() {
+        const offset = this._circumference - (this.progress / 100 * this._circumference);
+        const circle = this.shadowRoot.querySelector('circle');
+        circle.style.strokeDashoffset = offset;
     }
-
 }
 
-customElements.define('-card', Card);
+window.customElements.define('fitbit-progress-ring', FitbitProgressRing);
