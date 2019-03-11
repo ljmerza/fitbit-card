@@ -2,10 +2,6 @@ import { LitElement, html } from 'lit-element';
 import style from './style';
 
 class FitbitCard extends LitElement {
-  constructor() {
-    super();
-  }
-
   static get properties() {
     return {
       hass: Object,
@@ -13,26 +9,26 @@ class FitbitCard extends LitElement {
     };
   }
 
-  static get primaryColor(){
+  static get primaryColor() {
     return getComputedStyle(document.querySelector('body')).getPropertyValue('--primary-text-color');
   }
 
   setConfig(config) {
-    if (!config.entities) throw new Error(`Entities is required`);
-    if (config.entities && !Array.isArray(config.entities)) throw new Error(`entities must be a list`);
-    if (config.header_entities && !Array.isArray(config.header_entities)) throw new Error(`header_entities must be a list`);
+    if (!config.entities) throw new Error('Entities is required');
+    if (config.entities && !Array.isArray(config.entities)) throw new Error('entities must be a list');
+    if (config.header_entities && !Array.isArray(config.header_entities)) throw new Error('header_entities must be a list');
 
-    if (config.header_entities && config.header_entities.length > 3) throw new Error(`Must not have more than three eneties in header_entities`)
+    if (config.header_entities && config.header_entities.length > 3) throw new Error('Must not have more than three eneties in header_entities');
 
     this.config = {
       header: true,
-      title: ``,
+      title: '',
       max: 100,
       show_units_header: false,
       header_entities: [],
       entities: [],
       show_units: false,
-      ...config
+      ...config,
     };
   }
 
@@ -54,22 +50,22 @@ class FitbitCard extends LitElement {
    */
   render() {
     return html`
-			<ha-card>
+      <ha-card>
         <div class='fitbit-card__header'>
           ${this.config.header && this.createHeader()}
         </div>
         <div class='fitbit-card__rings'>
-				  ${this.generateSensorCards()}
+          ${this.generateSensorCards()}
         </div>
-			</ha-card>
-		`;
+      </ha-card>
+    `;
   }
 
   /**
    * Create the over all header for the fitbit card
    * @return {TemplateResult}
    */
-  createHeader(){
+  createHeader() {
     const entities = this.getEntities(this.config.header_entities);
 
     return html`
@@ -84,9 +80,8 @@ class FitbitCard extends LitElement {
    * @param {Entity[] | String[]} entities
    * @return {SensorEntity[]}
    */
-  getEntities(entities){
-    return entities.map(entity => {
-
+  getEntities(entities) {
+    return entities.map((entity) => {
       // if just simple list then return entity state
       if (typeof entity === 'string') {
         return this.hass.states[entity];
@@ -94,7 +89,6 @@ class FitbitCard extends LitElement {
 
       // else we have config for each entity so save config and entity state
       return { ...this.hass.states[entity.entity], ...{ _fitbit: entity } };
-
     }).filter(Boolean);
   }
 
@@ -104,9 +98,11 @@ class FitbitCard extends LitElement {
    */
   getStatus() {
     if (!this.config.battery_entity && !this.config.title) return html``;
-    
+
     // try to get battery entity and validate it
-    const batteryEntity = this.config.battery_entity && this.hass.states[this.config.battery_entity];
+    const batteryEntity = this.config.battery_entity
+      && this.hass.states[this.config.battery_entity];
+
     if (this.config.battery_entity && !batteryEntity)
       throw new Error(`state for ${this.config.battery_entity} not found`);
     if (this.config.battery_entity && !batteryEntity.attributes.model)
@@ -114,8 +110,8 @@ class FitbitCard extends LitElement {
 
     // create battery icon and color if given icon
     let batteryIcon = '';
-    if (batteryEntity.attributes.icon){
-      const {high, medium, low} = this.config.battery_colors || {};
+    if (batteryEntity.attributes.icon) {
+      const { high, medium, low } = this.config.battery_colors || {};
 
       let iconColor = high || '#10A13C';
       if (batteryEntity.state === 'Medium') iconColor = medium || '#DEE023';
@@ -123,7 +119,7 @@ class FitbitCard extends LitElement {
 
       batteryIcon = html`<ha-icon icon="${batteryEntity.attributes.icon}" style="color:${iconColor}"></ha-icon>`;
     }
-    
+
     return html`
       <div class='status'>
         <span>${this.config.title || batteryEntity.attributes.model || ''}</span>    
@@ -134,12 +130,12 @@ class FitbitCard extends LitElement {
 
   /**
    * Generate the card header with sensors if configured
-   * @param {SensorEntity} entity 
+   * @param {SensorEntity} entity
    * @return {TemplateResult}
    */
-  getHeaderSensor(entity){
+  getHeaderSensor(entity) {
     if (!entity) return html``;
-    
+
     const unit = (this.config.show_units_header || (entity._fitbit && entity._fitbit.show_units)) ? entity.attributes.unit_of_measurement : '';
     const iconColor = entity._fitbit && entity._fitbit.icon_color || '';
 
@@ -157,18 +153,18 @@ class FitbitCard extends LitElement {
    */
   generateSensorCards() {
     const entities = this.getEntities(this.config.entities);
-    
-    return entities.map(entity => {
+
+    return entities.map((entity) => {
       const max = (entity._fitbit && entity._fitbit.max) || this.config.max;
-      let progress = 100 - parseInt(((max - entity.state.replace(',', '')) / max) * 100, 0);
-      
-      if (isNaN(progress)) {
+      const progress = 100 - parseInt(((max - entity.state.replace(',', '')) / max) * 100, 0);
+
+      if (Number.isNaN(progress)) {
         console.error(`${entity.state} for ${entity.name} should be a number`);
         return html``;
       }
 
       const text = (entity._fitbit && entity._fitbit.text) || entity.attributes.friendly_name;
-      const unit = (this.config.show_units || (entity._fitbit && entity._fitbit.show_units)) ? entity.attributes.unit_of_measurement : ''
+      const unit = (this.config.show_units || (entity._fitbit && entity._fitbit.show_units)) ? entity.attributes.unit_of_measurement : '';
       const value = `${entity.state}${unit ? ` ${unit}` : ''}`;
       const color = this.determineCircleColor(entity, progress);
 
@@ -191,14 +187,14 @@ class FitbitCard extends LitElement {
   /**
    * get circle outline color based on color theme or config for entity given
    * @param {SensorEntity} entity
-   * @param {Number} progress 
+   * @param {Number} progress
    * @return {String}
    */
   determineCircleColor(entity, progress) {
     let color = FitbitCard.primaryColor;
     if (!entity._fitbit || !entity._fitbit.color_stops) return color;
-    
-    Object.keys(entity._fitbit.color_stops).forEach(colorStop => {
+
+    Object.keys(entity._fitbit.color_stops).forEach((colorStop) => {
       if (progress > colorStop) color = entity._fitbit.color_stops[colorStop];
     });
 
@@ -210,10 +206,6 @@ customElements.define('fitbit-card', FitbitCard);
 
 
 class FitbitProgressRing extends LitElement {
-  constructor() {
-    super();
-  }
-
   static get properties() {
     return {
       radius: String,
@@ -221,7 +213,7 @@ class FitbitProgressRing extends LitElement {
       progress: String,
       value: String,
       color: String,
-    }
+    };
   }
 
   static get styles() {
@@ -233,18 +225,18 @@ class FitbitProgressRing extends LitElement {
     this._circumference = normalizedRadius * 2 * Math.PI;
 
     return html`
-			<svg height="${this.radius * 2}" width="${this.radius * 2}">
-				<circle
-					stroke-dasharray="${this._circumference} ${this._circumference}"
-					style="stroke-dashoffset:${this._circumference}"
-					stroke-width="${this.stroke}"
-					fill="transparent"
-					r="${normalizedRadius}"
-					cx="${this.radius}"
-					cy="${this.radius}"
+      <svg height="${this.radius * 2}" width="${this.radius * 2}">
+        <circle
+          stroke-dasharray="${this._circumference} ${this._circumference}"
+          style="stroke-dashoffset:${this._circumference}"
+          stroke-width="${this.stroke}"
+          fill="transparent"
+          r="${normalizedRadius}"
+          cx="${this.radius}"
+          cy="${this.radius}"
           stroke="${this.color}"
-				/>
-				<text 
+        />
+        <text 
           x="50%" 
           y="50%" 
           dy="0.3em" 
@@ -254,8 +246,8 @@ class FitbitProgressRing extends LitElement {
         >
           ${this.value}
         </text>
-			</svg>
-		`;
+      </svg>
+    `;
   }
 
   updated() {

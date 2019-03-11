@@ -55,16 +55,16 @@
   text {
     stroke: var(--primary-text-color);
   }
-`;class it extends et{constructor(){super()}static get properties(){return{hass:Object,config:Object}}static get primaryColor(){return getComputedStyle(document.querySelector("body")).getPropertyValue("--primary-text-color")}setConfig(t){if(!t.entities)throw new Error("Entities is required");if(t.entities&&!Array.isArray(t.entities))throw new Error("entities must be a list");if(t.header_entities&&!Array.isArray(t.header_entities))throw new Error("header_entities must be a list");if(t.header_entities&&t.header_entities.length>3)throw new Error("Must not have more than three eneties in header_entities");this.config={header:!0,title:"",max:100,show_units_header:!1,header_entities:[],entities:[],show_units:!1,...t}}getCardSize(){return 1}static get styles(){return st}render(){return $`
-			<ha-card>
+`;class it extends et{static get properties(){return{hass:Object,config:Object}}static get primaryColor(){return getComputedStyle(document.querySelector("body")).getPropertyValue("--primary-text-color")}setConfig(t){if(!t.entities)throw new Error("Entities is required");if(t.entities&&!Array.isArray(t.entities))throw new Error("entities must be a list");if(t.header_entities&&!Array.isArray(t.header_entities))throw new Error("header_entities must be a list");if(t.header_entities&&t.header_entities.length>3)throw new Error("Must not have more than three eneties in header_entities");this.config={header:!0,title:"",max:100,show_units_header:!1,header_entities:[],entities:[],show_units:!1,...t}}getCardSize(){return 1}static get styles(){return st}render(){return $`
+      <ha-card>
         <div class='fitbit-card__header'>
           ${this.config.header&&this.createHeader()}
         </div>
         <div class='fitbit-card__rings'>
-				  ${this.generateSensorCards()}
+          ${this.generateSensorCards()}
         </div>
-			</ha-card>
-		`}createHeader(){const t=this.getEntities(this.config.header_entities);return $`
+      </ha-card>
+    `}createHeader(){const t=this.getEntities(this.config.header_entities);return $`
         ${this.getStatus()}
         ${t.map(t=>this.getHeaderSensor(t))}
       </div>
@@ -78,7 +78,7 @@
         <ha-icon icon="${t.attributes.icon}" style="color:${s}"></ha-icon>
         <span>${t.state} ${e}</span>
       </div>
-    `}generateSensorCards(){return this.getEntities(this.config.entities).map(t=>{const e=t._fitbit&&t._fitbit.max||this.config.max;let s=100-parseInt((e-t.state.replace(",",""))/e*100,0);if(isNaN(s))return console.error(`${t.state} for ${t.name} should be a number`),$``;const i=t._fitbit&&t._fitbit.text||t.attributes.friendly_name,r=this.config.show_units||t._fitbit&&t._fitbit.show_units?t.attributes.unit_of_measurement:"",n=`${t.state}${r?` ${r}`:""}`,o=this.determineCircleColor(t,s);return $`
+    `}generateSensorCards(){return this.getEntities(this.config.entities).map(t=>{const e=t._fitbit&&t._fitbit.max||this.config.max,s=100-parseInt((e-t.state.replace(",",""))/e*100,0);if(Number.isNaN(s))return console.error(`${t.state} for ${t.name} should be a number`),$``;const i=t._fitbit&&t._fitbit.text||t.attributes.friendly_name,r=this.config.show_units||t._fitbit&&t._fitbit.show_units?t.attributes.unit_of_measurement:"",n=`${t.state}${r?` ${r}`:""}`,o=this.determineCircleColor(t,s);return $`
         <div class='fitbit-card__ring'>
           <fitbit-progress-ring 
             stroke="4"
@@ -90,19 +90,19 @@
           </fitbit-progress-ring>
           <div>${i}</div>
         </div>
-      `})}determineCircleColor(t,e){let s=it.primaryColor;return t._fitbit&&t._fitbit.color_stops?(Object.keys(t._fitbit.color_stops).forEach(i=>{e>i&&(s=t._fitbit.color_stops[i])}),s):s}}customElements.define("fitbit-card",it);window.customElements.define("fitbit-progress-ring",class extends et{constructor(){super()}static get properties(){return{radius:String,stroke:String,progress:String,value:String,color:String}}static get styles(){return st}render(){const t=this.radius-2*this.stroke;return this._circumference=2*t*Math.PI,$`
-			<svg height="${2*this.radius}" width="${2*this.radius}">
-				<circle
-					stroke-dasharray="${this._circumference} ${this._circumference}"
-					style="stroke-dashoffset:${this._circumference}"
-					stroke-width="${this.stroke}"
-					fill="transparent"
-					r="${t}"
-					cx="${this.radius}"
-					cy="${this.radius}"
+      `})}determineCircleColor(t,e){let s=it.primaryColor;return t._fitbit&&t._fitbit.color_stops?(Object.keys(t._fitbit.color_stops).forEach(i=>{e>i&&(s=t._fitbit.color_stops[i])}),s):s}}customElements.define("fitbit-card",it);window.customElements.define("fitbit-progress-ring",class extends et{static get properties(){return{radius:String,stroke:String,progress:String,value:String,color:String}}static get styles(){return st}render(){const t=this.radius-2*this.stroke;return this._circumference=2*t*Math.PI,$`
+      <svg height="${2*this.radius}" width="${2*this.radius}">
+        <circle
+          stroke-dasharray="${this._circumference} ${this._circumference}"
+          style="stroke-dashoffset:${this._circumference}"
+          stroke-width="${this.stroke}"
+          fill="transparent"
+          r="${t}"
+          cx="${this.radius}"
+          cy="${this.radius}"
           stroke="${this.color}"
-				/>
-				<text 
+        />
+        <text 
           x="50%" 
           y="50%" 
           dy="0.3em" 
@@ -112,5 +112,5 @@
         >
           ${this.value}
         </text>
-			</svg>
-		`}updated(){const t=this._circumference-this.progress/100*this._circumference;this.shadowRoot.querySelector("circle").style.strokeDashoffset=t}})}();
+      </svg>
+    `}updated(){const t=this._circumference-this.progress/100*this._circumference;this.shadowRoot.querySelector("circle").style.strokeDashoffset=t}})}();
