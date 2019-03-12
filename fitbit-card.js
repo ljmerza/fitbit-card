@@ -68,7 +68,7 @@
         ${this.getStatus()}
         ${t.map(t=>this.getHeaderSensor(t))}
       </div>
-    `}getEntities(t){return t.map(t=>"string"==typeof t?this.hass.states[t]:{...this.hass.states[t.entity],_fitbit:t}).filter(Boolean)}getStatus(){if(!this.config.battery_entity&&!this.config.title)return $``;const t=this.config.battery_entity&&this.hass.states[this.config.battery_entity];if(this.config.battery_entity&&!t)return void console.log(`state for ${this.config.battery_entity} not found`);this.config.battery_entity&&!t.attributes.model&&console.log(`state for ${this.config.battery_entity} not found`);let e="";if(t.attributes.icon){const{high:s,medium:i,low:r}=this.config.battery_colors||{};let n=s||"#10A13C";"Medium"===t.state&&(n=i||"#DEE023"),"Low"===t.state&&(n=r||"#DA3116"),e=$`<ha-icon icon="${t.attributes.icon}" style="color:${n}"></ha-icon>`}return $`
+    `}getEntities(t){return t.map(t=>"string"==typeof t?this.hass.states[t]:{...this.hass.states[t.entity],_fitbit:t}).filter(Boolean)}getStatus(){if(!this.config.battery_entity&&!this.config.title)return $``;const t=this.config.battery_entity&&this.hass.states[this.config.battery_entity];if(this.config.battery_entity&&!t&&!t.attributes)return void console.log(`state for ${this.config.battery_entity} not found`);this.config.battery_entity&&!t.attributes.model&&console.log(`state for ${this.config.battery_entity} not found`);let e="";if(t.attributes.icon){const{high:s,medium:i,low:r}=this.config.battery_colors||{};let n=s||"#10A13C";"Medium"===t.state&&(n=i||"#DEE023"),"Low"===t.state&&(n=r||"#DA3116"),e=$`<ha-icon icon="${t.attributes.icon}" style="color:${n}"></ha-icon>`}return $`
       <div class='status'>
         <span>${this.config.title||t.attributes.model||""}</span>    
         ${e}

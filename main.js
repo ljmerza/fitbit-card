@@ -103,7 +103,7 @@ class FitbitCard extends LitElement {
     const batteryEntity = this.config.battery_entity
       && this.hass.states[this.config.battery_entity];
 
-    if (this.config.battery_entity && !batteryEntity) {
+    if (this.config.battery_entity && !(batteryEntity || batteryEntity.attributes)) {
       console.log(`state for ${this.config.battery_entity} not found`);
       return;
     }
