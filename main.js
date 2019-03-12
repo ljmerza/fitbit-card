@@ -103,10 +103,14 @@ class FitbitCard extends LitElement {
     const batteryEntity = this.config.battery_entity
       && this.hass.states[this.config.battery_entity];
 
-    if (this.config.battery_entity && !batteryEntity)
-      throw new Error(`state for ${this.config.battery_entity} not found`);
-    if (this.config.battery_entity && !batteryEntity.attributes.model)
-      throw new Error(`state for ${this.config.battery_entity} not found`);
+    if (this.config.battery_entity && !batteryEntity) {
+      console.log(`state for ${this.config.battery_entity} not found`);
+      return;
+    }
+
+    if (this.config.battery_entity && !batteryEntity.attributes.model) {
+      console.log(`state for ${this.config.battery_entity} not found`);
+    }
 
     // create battery icon and color if given icon
     let batteryIcon = '';
