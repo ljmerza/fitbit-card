@@ -73,12 +73,12 @@
         <span>${this.config.title||t.attributes.model||""}</span>    
         ${e}
       </div>
-    `}getHeaderSensor(t){if(!t)return $``;const e=this.config.show_units_header||t._fitbit&&t._fitbit.show_units?t.attributes.unit_of_measurement:"",s=t._fitbit&&t._fitbit.icon_color||"";return $`
+    `}getHeaderSensor(t){if(!t)return $``;const e=this.config.show_units_header||t._fitbit&&t._fitbit.show_units?t._fitbit.units||t.attributes.unit_of_measurement:"",s=t._fitbit&&t._fitbit.icon_color||"";return $`
       <div>
         <ha-icon icon="${t.attributes.icon}" style="color:${s}"></ha-icon>
         <span>${t.state} ${e}</span>
       </div>
-    `}generateSensorCards(){return this.getEntities(this.config.entities).map(t=>{const e=t._fitbit&&t._fitbit.max||this.config.max,s=100-parseInt((e-t.state.replace(",",""))/e*100,0);if(Number.isNaN(s))return console.error(`${t.state} for ${t.name} should be a number`),$``;const i=t._fitbit&&t._fitbit.text||t.attributes.friendly_name,r=this.config.show_units||t._fitbit&&t._fitbit.show_units?t.attributes.unit_of_measurement:"",n=`${t.state}${r?` ${r}`:""}`,o=this.determineCircleColor(t,s);return $`
+    `}generateSensorCards(){return this.getEntities(this.config.entities).map(t=>{const e=t._fitbit&&t._fitbit.max||this.config.max,s=100-parseInt((e-t.state.replace(",",""))/e*100,0);if(Number.isNaN(s))return console.error(`${t.state} for ${t.name} should be a number`),$``;const i=t._fitbit&&t._fitbit.units||t.attributes.friendly_name,r=this.config.show_units||t._fitbit&&t._fitbit.show_units?t.attributes.unit_of_measurement:"",n=`${t.state}${r?` ${r}`:""}`,o=this.determineCircleColor(t,s);return $`
         <div class='fitbit-card__ring'>
           <fitbit-progress-ring 
             stroke="4"

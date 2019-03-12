@@ -136,7 +136,11 @@ class FitbitCard extends LitElement {
   getHeaderSensor(entity) {
     if (!entity) return html``;
 
-    const unit = (this.config.show_units_header || (entity._fitbit && entity._fitbit.show_units)) ? entity.attributes.unit_of_measurement : '';
+    const showUnits = this.config.show_units_header
+      || (entity._fitbit && entity._fitbit.show_units);
+
+    const unit = showUnits ? (entity._fitbit.units || entity.attributes.unit_of_measurement) : '';
+
     const iconColor = entity._fitbit && entity._fitbit.icon_color || '';
 
     return html`
@@ -163,7 +167,7 @@ class FitbitCard extends LitElement {
         return html``;
       }
 
-      const text = (entity._fitbit && entity._fitbit.text) || entity.attributes.friendly_name;
+      const text = (entity._fitbit && entity._fitbit.units) || entity.attributes.friendly_name;
       const unit = (this.config.show_units || (entity._fitbit && entity._fitbit.show_units)) ? entity.attributes.unit_of_measurement : '';
       const value = `${entity.state}${unit ? ` ${unit}` : ''}`;
       const color = this.determineCircleColor(entity, progress);

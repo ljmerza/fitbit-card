@@ -36,6 +36,7 @@ custom_updater:
 | entity | string | **Required** | Name of entitiy
 | icon_color | string | **Optional** | color of icon next to entity (can be color name or hex value)
 | show_units | boolean | **Optional** | `false` show units next to entity value (show_units_header overrides this)
+| units | string | **Optional** | override default units with custom units
 
 <h2>entities options</h2>
 
@@ -45,6 +46,7 @@ custom_updater:
 | max | number | **Optional** | `global max value` override global maxiumum value for this entity
 | color_stops | list | **Optional** | `--primary-color` custom colors for percent circle
 | show_units | boolean | **Optional** | `false` show units next to value
+| units | string | **Optional** | override default units with custom units
 
 
 <h2>Configuration</h2>
