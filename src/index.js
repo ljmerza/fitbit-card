@@ -1,5 +1,11 @@
 import { LitElement, html } from 'lit-element';
 import style from './style';
+import configDefaults from './defaults';
+
+
+import FitbitCardEditor from './index-editor';
+customElements.define('fitbit-card-editor', FitbitCardEditor);
+
 
 class FitbitCard extends LitElement {
   static get properties() {
@@ -9,27 +15,24 @@ class FitbitCard extends LitElement {
     };
   }
 
+  static async getConfigElement() {
+    return document.createElement("fitbit-card-editor");
+  }
+
   static get primaryColor() {
     return getComputedStyle(document.querySelector('body')).getPropertyValue('--primary-text-color');
   }
 
   setConfig(config) {
+    console.log({ configconfig: config});
+    
     if (!config.entities) throw new Error('Entities is required');
     if (config.entities && !Array.isArray(config.entities)) throw new Error('entities must be a list');
     if (config.header_entities && !Array.isArray(config.header_entities)) throw new Error('header_entities must be a list');
 
-    if (config.header_entities && config.header_entities.length > 3) throw new Error('Must not have more than three eneties in header_entities');
+    if (config.header_entities && config.header_entities.length > 3) throw new Error('Must not have more than three entities in header_entities');
 
-    this.config = {
-      header: true,
-      title: '',
-      max: 100,
-      show_units_header: false,
-      header_entities: [],
-      entities: [],
-      show_units: false,
-      ...config,
-    };
+    this.config = { ...configDefaults, ...config };
   }
 
   /**

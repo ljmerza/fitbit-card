@@ -23,9 +23,10 @@ custom_updater:
 | ---- | ---- | ------- | -----------
 | type | string | **Required** | `custom:fitbit-card`
 | battery_entity | string | **Optional** | Battery entity to show battery status
+| header | boolean | **Optional** | `true` Show/hide header
 | header_entities | list<Object> | **Optional** | `[]` List of fitbit sensors to display in the header
 | show_units_header | boolean | **Optional** | `false` Show units for all header entities
-| entities | list<Object> | **Optional** | `[]` List of fitbit sensors to display n the body
+| entities | list<Object> | **Optional** | `[]` List of fitbit sensors to display in the body
 | max | string | **Optional** | `100` Global maximum value for body entities
 
 
