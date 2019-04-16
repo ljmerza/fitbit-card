@@ -26,6 +26,16 @@ const style = css`
     .header-max {
         color: var(--google-red-500);
     }
+
+    .common-entity-options {
+        width: 90%;
+        margin-left: 7%;
+        display: flex;
+    }
+
+    .common-entity-options .units-input {
+        margin-top: -20px;
+    }
 `;
 
 export default style;

@@ -9067,14 +9067,17 @@ try {
 /*!*************************!*\
   !*** ./src/defaults.js ***!
   \*************************/
-/*! exports provided: default */
+/*! exports provided: cardDefaults, headerEntityDefaults, bodyEntityDefaults */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cardDefaults", function() { return cardDefaults; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "headerEntityDefaults", function() { return headerEntityDefaults; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "bodyEntityDefaults", function() { return bodyEntityDefaults; });
 
 
-/* harmony default export */ __webpack_exports__["default"] = ({
+const cardDefaults = {
     header: true,
     title: '',
     max: 100,
@@ -9082,7 +9085,20 @@ __webpack_require__.r(__webpack_exports__);
     header_entities: [],
     entities: [],
     show_units: false,
-});
+};
+
+const headerEntityDefaults = {
+    icon_color: '',
+    show_units: false,
+    units: '',
+};
+
+const bodyEntityDefaults = {
+    max: cardDefaults.max,
+    color_stops: '',
+    show_units: false,
+    units: '',
+};
 
 /***/ }),
 
@@ -9127,8 +9143,7 @@ class FitbitCardEditor extends lit_element__WEBPACK_IMPORTED_MODULE_0__["LitElem
     }
 
     setConfig(config) {
-        this._config = { ..._defaults__WEBPACK_IMPORTED_MODULE_2__["default"], ...config };
-        console.log(this._config);
+        this._config = { ..._defaults__WEBPACK_IMPORTED_MODULE_2__["cardDefaults"], ...config };
     }
 
     get selectedHeaderEntities(){
@@ -9155,17 +9170,36 @@ class FitbitCardEditor extends lit_element__WEBPACK_IMPORTED_MODULE_0__["LitElem
     get entityHeaderOptions() {
         const disableAll = this.disableHeaderOptions;
         return this.entityOptions.map(eid => {
+            const matchingConfig = this._config.header_entities.find(ent => ent.entity === eid) || {};
             const isChecked = this.selectedHeaderEntities.includes(eid);
+            const entity = this.hass.states[eid] || {};
+            
             return {
-                name: eid, 
-                checked: isChecked, 
-                disabled: !isChecked && disableAll
+                name: eid,
+                checked: isChecked,
+                disabled: disableAll && !isChecked,
+                ..._defaults__WEBPACK_IMPORTED_MODULE_2__["headerEntityDefaults"],
+                ...entity.attributes,
+                ...matchingConfig,
             }
         });
     }
 
     get entityBodyOptions() {
-        return this.entityOptions.map(eid => ({ name: eid, checked: this.selectedBodyEntities.includes(eid), disabled: false }));
+        return this.entityOptions.map(eid => {
+            const matchingConfig = this._config.entities.find(ent => ent.entity === eid) || {};
+            const isChecked = this.selectedBodyEntities.includes(eid);
+            const entity = this.hass.states[eid] || {};
+
+            return {
+                name: eid,
+                checked: isChecked,
+                disabled: !isChecked,
+                ..._defaults__WEBPACK_IMPORTED_MODULE_2__["bodyEntityDefaults"],
+                ...entity.attributes,
+                ...matchingConfig
+            }
+        });
     }
 
     firstUpdated() {
@@ -9179,10 +9213,10 @@ class FitbitCardEditor extends lit_element__WEBPACK_IMPORTED_MODULE_0__["LitElem
 
         return lit_element__WEBPACK_IMPORTED_MODULE_0__["html"]`
             <div class="card-config">
-                <div class=overall-config'>
+                <div class='overall-config'>
                     <div class='checkbox-options'>
                         <paper-checkbox @checked-changed="${this._valueChanged}" .checked=${this._config.header}
-                            .configValue="${" header"}">Show Header</paper-checkbox>
+                            .configValue="${"header"}">Show Header</paper-checkbox>
                         <paper-checkbox @checked-changed="${this._valueChanged}" .checked=${this._config.title}
                             .configValue="${"title"}">Show Title</paper-checkbox>
                     </div>
@@ -9202,7 +9236,7 @@ class FitbitCardEditor extends lit_element__WEBPACK_IMPORTED_MODULE_0__["LitElem
                                 .entityHeaderValue="${entity.name}">
                                 ${entity.name}
                             </paper-checkbox>
-                            ${entity.checked ? this.showHeaderEntityOptions() : ``}
+                            ${entity.checked ? this.showHeaderEntityOptions(entity) : ``}
                         `;
                     })}   
                 </div>
@@ -9219,7 +9253,7 @@ class FitbitCardEditor extends lit_element__WEBPACK_IMPORTED_MODULE_0__["LitElem
                             >
                                 ${entity.name}
                             </paper-checkbox>
-                            ${entity.checked ? this.showBodyEntityOptions() : ``}
+                            ${entity.checked ? this.showBodyEntityOptions(entity) : ``}
                         `;
                     })}
                 </div>
@@ -9227,23 +9261,60 @@ class FitbitCardEditor extends lit_element__WEBPACK_IMPORTED_MODULE_0__["LitElem
         `;
     }
 
-    showHeaderEntityOptions(){
-        return lit_element__WEBPACK_IMPORTED_MODULE_0__["html"]``;
+    showHeaderEntityOptions(entity){
+        console.log({ entity });
+        
+        return lit_element__WEBPACK_IMPORTED_MODULE_0__["html"]`
+            <div class='common-entity-options checkbox-options'>
+                <paper-checkbox @checked-changed="${this._valueChanged}" 
+                    .checked=${entity.show_units} .entityHeaderConfigKey="${"show_units"}" 
+                    .entityName="${entity.name}">Show Units</paper-checkbox>
+                ${entity.show_units ?
+                    lit_element__WEBPACK_IMPORTED_MODULE_0__["html"]`<paper-input class='units-input' label="Custom Units" .value="${entity.units || entity.unit_of_measurement}" @value-changed="${this._valueChanged}"
+                        .entityHeaderConfigKey="${"units"}" .entityName="${entity.name}">
+                    </paper-input>` : ''
+                }
+            </div>
+            <div class='common-entity-options checkbox-options'>
+                <paper-input label="Icon Color" .value="${entity.icon_color}" @value-changed="${this._valueChanged}"
+                    .entityHeaderConfigKey="${"icon_color"}" .entityName="${entity.name}">
+                </paper-input>
+            </div>
+        `;
     }
 
-    showBodyEntityOptions() {
-        return lit_element__WEBPACK_IMPORTED_MODULE_0__["html"]``;
-    }
-
-    createCommonEntityOptions(){
-        return lit_element__WEBPACK_IMPORTED_MODULE_0__["html"]``;
+    showBodyEntityOptions(entity) {
+        return lit_element__WEBPACK_IMPORTED_MODULE_0__["html"]`
+            <div class='common-entity-options checkbox-options'>
+                <paper-checkbox @checked-changed="${this._valueChanged}" .checked=${entity.show_units} 
+                    .entityBodyConfigKey="${"show_units"}" .entityName="${entity.name}">Show Units</paper-checkbox>
+                ${entity.show_units ?
+                    lit_element__WEBPACK_IMPORTED_MODULE_0__["html"]`<paper-input class='units-input' label="Custom Units" .value="${entity.units || entity.unit_of_measurement}" @value-changed="${this._valueChanged}"
+                        .entityBodyConfigKey="${"units"}" .entityName="${entity.name}">
+                    </paper-input>` : ''
+                }
+            </div>
+            <div class='common-entity-options checkbox-options'>
+                <paper-input label="Max" .value="${entity.max}" @value-changed="${this._valueChanged}"
+                    .entityBodyConfigKey="${"max"}" .entityName="${entity.name}">
+                </paper-input>
+                <paper-input label="Max" .value="${entity.color_stops}" @value-changed="${this._valueChanged}"
+                    .entityBodyConfigKey="${"color_stops"}" .entityName="${entity.name}">
+                </paper-input>
+            </div>
+        `;
     }
 
     _valueChanged(ev) {
         if (!this._config || !this.hass || !this._firstRendered) return;
-        const { target: { configValue, value, entityValue, entityHeaderValue, entityConfigValue }, detail: { value: checkedValue } } = ev;
+        const { target: { 
+            configValue, value, entityName, 
+            entityValue, entityHeaderValue,
+            entityHeaderConfigKey, entityBodyConfigKey,
+        }, detail: { value: checkedValue } } = ev;
+        
 
-        // if changing an entity update config
+        // if changing an entity directly -> update config
         if (entityValue || entityHeaderValue) {
             const key = entityHeaderValue ? 'header_entities' : 'entities';
             const changedEntityName = entityValue || entityHeaderValue;
@@ -9255,14 +9326,28 @@ class FitbitCardEditor extends lit_element__WEBPACK_IMPORTED_MODULE_0__["LitElem
                 this._config = { ...this._config, [key]: newEntities };
             }
 
+        } else if (entityHeaderConfigKey || entityBodyConfigKey) {
+            // else if updating an entity's config
+            const key = entityHeaderConfigKey ? 'header_entities' : 'entities';
+            const entityToChangeIndex = this._config[key].findIndex(entity => entity.entity === entityName);
+            const entityToChange = this._config[key][entityToChangeIndex];
+
+            // change entity to new value
+            const newValue = (checkedValue !== undefined) ? checkedValue : value;
+            const newEntity = { ...entityToChange, [entityHeaderConfigKey || entityBodyConfigKey]: newValue};
+
+            // create new list of entities
+            const newEntities = this._config[key].map(entity => {
+                if (entity.entity === entityName) return newEntity;
+                else return entity;
+            });
+
+            // add entity back to new config
+            this._config = { ...this._config, [key]: newEntities};
+
         } else if (checkedValue !== undefined || checkedValue !== null) {
             // else if updating a checkbox config update that
             this._config = { ...this._config, [configValue]: checkedValue };
-
-        } else if (entityConfigValue) {
-            // else if updating an entity's config
-            console.log({ entityConfigValue });
-            
 
         } else {
             this._config = { ...this._config, [configValue]: value };
@@ -9322,7 +9407,7 @@ class FitbitCard extends lit_element__WEBPACK_IMPORTED_MODULE_0__["LitElement"] 
 
     if (config.header_entities && config.header_entities.length > 3) throw new Error('Must not have more than three entities in header_entities');
 
-    this.config = { ..._defaults__WEBPACK_IMPORTED_MODULE_2__["default"], ...config };
+    this.config = { ..._defaults__WEBPACK_IMPORTED_MODULE_2__["cardDefaults"], ...config };
   }
 
   /**
@@ -9599,6 +9684,16 @@ const style = lit_element__WEBPACK_IMPORTED_MODULE_0__["css"]`
 
     .header-max {
         color: var(--google-red-500);
+    }
+
+    .common-entity-options {
+        width: 90%;
+        margin-left: 7%;
+        display: flex;
+    }
+
+    .common-entity-options .units-input {
+        margin-top: -20px;
     }
 `;
 

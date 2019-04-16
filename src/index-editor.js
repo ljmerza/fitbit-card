@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit-element';
 import style from './style-editor';
-import configDefaults from './defaults';
+import { cardDefaults, headerEntityDefaults, bodyEntityDefaults } from './defaults';
 
 
 const fireEvent = (node, type, detail = {}, options = {}) => {
@@ -26,8 +26,7 @@ export default class FitbitCardEditor extends LitElement {
     }
 
     setConfig(config) {
-        this._config = { ...configDefaults, ...config };
-        console.log(this._config);
+        this._config = { ...cardDefaults, ...config };
     }
 
     get selectedHeaderEntities(){
@@ -54,17 +53,36 @@ export default class FitbitCardEditor extends LitElement {
     get entityHeaderOptions() {
         const disableAll = this.disableHeaderOptions;
         return this.entityOptions.map(eid => {
+            const matchingConfig = this._config.header_entities.find(ent => ent.entity === eid) || {};
             const isChecked = this.selectedHeaderEntities.includes(eid);
+            const entity = this.hass.states[eid] || {};
+            
             return {
-                name: eid, 
-                checked: isChecked, 
-                disabled: !isChecked && disableAll
+                name: eid,
+                checked: isChecked,
+                disabled: disableAll && !isChecked,
+                ...headerEntityDefaults,
+                ...entity.attributes,
+                ...matchingConfig,
             }
         });
     }
 
     get entityBodyOptions() {
-        return this.entityOptions.map(eid => ({ name: eid, checked: this.selectedBodyEntities.includes(eid), disabled: false }));
+        return this.entityOptions.map(eid => {
+            const matchingConfig = this._config.entities.find(ent => ent.entity === eid) || {};
+            const isChecked = this.selectedBodyEntities.includes(eid);
+            const entity = this.hass.states[eid] || {};
+
+            return {
+                name: eid,
+                checked: isChecked,
+                disabled: !isChecked,
+                ...bodyEntityDefaults,
+                ...entity.attributes,
+                ...matchingConfig
+            }
+        });
     }
 
     firstUpdated() {
@@ -78,10 +96,10 @@ export default class FitbitCardEditor extends LitElement {
 
         return html`
             <div class="card-config">
-                <div class=overall-config'>
+                <div class='overall-config'>
                     <div class='checkbox-options'>
                         <paper-checkbox @checked-changed="${this._valueChanged}" .checked=${this._config.header}
-                            .configValue="${" header"}">Show Header</paper-checkbox>
+                            .configValue="${"header"}">Show Header</paper-checkbox>
                         <paper-checkbox @checked-changed="${this._valueChanged}" .checked=${this._config.title}
                             .configValue="${"title"}">Show Title</paper-checkbox>
                     </div>
@@ -101,7 +119,7 @@ export default class FitbitCardEditor extends LitElement {
                                 .entityHeaderValue="${entity.name}">
                                 ${entity.name}
                             </paper-checkbox>
-                            ${entity.checked ? this.showHeaderEntityOptions() : ``}
+                            ${entity.checked ? this.showHeaderEntityOptions(entity) : ``}
                         `;
                     })}   
                 </div>
@@ -118,7 +136,7 @@ export default class FitbitCardEditor extends LitElement {
                             >
                                 ${entity.name}
                             </paper-checkbox>
-                            ${entity.checked ? this.showBodyEntityOptions() : ``}
+                            ${entity.checked ? this.showBodyEntityOptions(entity) : ``}
                         `;
                     })}
                 </div>
@@ -126,23 +144,60 @@ export default class FitbitCardEditor extends LitElement {
         `;
     }
 
-    showHeaderEntityOptions(){
-        return html``;
+    showHeaderEntityOptions(entity){
+        console.log({ entity });
+        
+        return html`
+            <div class='common-entity-options checkbox-options'>
+                <paper-checkbox @checked-changed="${this._valueChanged}" 
+                    .checked=${entity.show_units} .entityHeaderConfigKey="${"show_units"}" 
+                    .entityName="${entity.name}">Show Units</paper-checkbox>
+                ${entity.show_units ?
+                    html`<paper-input class='units-input' label="Custom Units" .value="${entity.units || entity.unit_of_measurement}" @value-changed="${this._valueChanged}"
+                        .entityHeaderConfigKey="${"units"}" .entityName="${entity.name}">
+                    </paper-input>` : ''
+                }
+            </div>
+            <div class='common-entity-options checkbox-options'>
+                <paper-input label="Icon Color" .value="${entity.icon_color}" @value-changed="${this._valueChanged}"
+                    .entityHeaderConfigKey="${"icon_color"}" .entityName="${entity.name}">
+                </paper-input>
+            </div>
+        `;
     }
 
-    showBodyEntityOptions() {
-        return html``;
-    }
-
-    createCommonEntityOptions(){
-        return html``;
+    showBodyEntityOptions(entity) {
+        return html`
+            <div class='common-entity-options checkbox-options'>
+                <paper-checkbox @checked-changed="${this._valueChanged}" .checked=${entity.show_units} 
+                    .entityBodyConfigKey="${"show_units"}" .entityName="${entity.name}">Show Units</paper-checkbox>
+                ${entity.show_units ?
+                    html`<paper-input class='units-input' label="Custom Units" .value="${entity.units || entity.unit_of_measurement}" @value-changed="${this._valueChanged}"
+                        .entityBodyConfigKey="${"units"}" .entityName="${entity.name}">
+                    </paper-input>` : ''
+                }
+            </div>
+            <div class='common-entity-options checkbox-options'>
+                <paper-input label="Max" .value="${entity.max}" @value-changed="${this._valueChanged}"
+                    .entityBodyConfigKey="${"max"}" .entityName="${entity.name}">
+                </paper-input>
+                <paper-input label="Max" .value="${entity.color_stops}" @value-changed="${this._valueChanged}"
+                    .entityBodyConfigKey="${"color_stops"}" .entityName="${entity.name}">
+                </paper-input>
+            </div>
+        `;
     }
 
     _valueChanged(ev) {
         if (!this._config || !this.hass || !this._firstRendered) return;
-        const { target: { configValue, value, entityValue, entityHeaderValue, entityConfigValue }, detail: { value: checkedValue } } = ev;
+        const { target: { 
+            configValue, value, entityName, 
+            entityValue, entityHeaderValue,
+            entityHeaderConfigKey, entityBodyConfigKey,
+        }, detail: { value: checkedValue } } = ev;
+        
 
-        // if changing an entity update config
+        // if changing an entity directly -> update config
         if (entityValue || entityHeaderValue) {
             const key = entityHeaderValue ? 'header_entities' : 'entities';
             const changedEntityName = entityValue || entityHeaderValue;
@@ -154,14 +209,28 @@ export default class FitbitCardEditor extends LitElement {
                 this._config = { ...this._config, [key]: newEntities };
             }
 
+        } else if (entityHeaderConfigKey || entityBodyConfigKey) {
+            // else if updating an entity's config
+            const key = entityHeaderConfigKey ? 'header_entities' : 'entities';
+            const entityToChangeIndex = this._config[key].findIndex(entity => entity.entity === entityName);
+            const entityToChange = this._config[key][entityToChangeIndex];
+
+            // change entity to new value
+            const newValue = (checkedValue !== undefined) ? checkedValue : value;
+            const newEntity = { ...entityToChange, [entityHeaderConfigKey || entityBodyConfigKey]: newValue};
+
+            // create new list of entities
+            const newEntities = this._config[key].map(entity => {
+                if (entity.entity === entityName) return newEntity;
+                else return entity;
+            });
+
+            // add entity back to new config
+            this._config = { ...this._config, [key]: newEntities};
+
         } else if (checkedValue !== undefined || checkedValue !== null) {
             // else if updating a checkbox config update that
             this._config = { ...this._config, [configValue]: checkedValue };
-
-        } else if (entityConfigValue) {
-            // else if updating an entity's config
-            console.log({ entityConfigValue });
-            
 
         } else {
             this._config = { ...this._config, [configValue]: value };

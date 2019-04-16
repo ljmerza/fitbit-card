@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit-element';
 import style from './style';
-import configDefaults from './defaults';
+import {cardDefaults} from './defaults';
 
 
 import FitbitCardEditor from './index-editor';
@@ -32,7 +32,7 @@ class FitbitCard extends LitElement {
 
     if (config.header_entities && config.header_entities.length > 3) throw new Error('Must not have more than three entities in header_entities');
 
-    this.config = { ...configDefaults, ...config };
+    this.config = { ...cardDefaults, ...config };
   }
 
   /**
