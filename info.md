@@ -16,29 +16,28 @@ resources:
 ## Configurations:
 ---
 ```yaml
-views:
-  - type: 'custom:fitbit-card'
-    battery_entity: sensor.versa_battery
-    header_entities:
-      - entity: sensor.tracker_steps
-        icon_color: '#14308D'
-      - entity: sensor.distance
-        show_units: true
-      - entity: sensor.tracker_calories
-        icon_color: red
-    entities:
-      - entity: sensor.minutes_sedentary
-        max: 1000
-      - entity: sensor.minutes_very_active
-        max: 120
-      - entity: sensor.minutes_lightly_active
-        max: 50
-        color_stops:
-          '0': red
-          '50': yellow
-          '90': green
-      - entity: sensor.resting_heart_rate
-        show_units: true
+type: 'custom:fitbit-card'
+battery_entity: sensor.versa_battery
+header_entities:
+  - entity: sensor.tracker_steps
+    icon_color: '#14308D'
+  - entity: sensor.distance
+    show_units: true
+  - entity: sensor.tracker_calories
+    icon_color: red
+entities:
+  - entity: sensor.minutes_sedentary
+    max: 1000
+  - entity: sensor.minutes_very_active
+    max: 120
+  - entity: sensor.minutes_lightly_active
+    max: 50
+    color_stops:
+      '0': red
+      '50': yellow
+      '90': green
+  - entity: sensor.resting_heart_rate
+    show_units: true
 ```
 
 ## Options
