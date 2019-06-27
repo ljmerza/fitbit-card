@@ -1,69 +1,20 @@
-<h1 align="center">Fitbit Card for Home Assistant</h1>
+# Fitbit Card for Home Assistant
+Show your Fitbit stats
 
-<p align="center">
-  <img src='fitbit_card.jpg' />
-</p>
-
-
-<h2>Track Updates</h2>
-
-This custom card can be tracked with the help of [custom-updater](https://github.com/custom-components/custom_updater).
-
-In your configuration.yaml
-
-```yaml
-custom_updater:
-  card_urls:
-    - https://raw.githubusercontent.com/ljmerza/fitbit-card/master/custom_updater.json
-```
-
-<h2>Options</h2>
-
-| Name | Type | Requirement | `Default` Description
-| ---- | ---- | ------- | -----------
-| type | string | **Required** | `custom:fitbit-card`
-| battery_entity | string | **Optional** | Battery entity to show battery status
-| header | boolean | **Optional** | `true` Show/hide header
-| header_entities | list<Object> | **Optional** | `[]` List of fitbit sensors to display in the header
-| show_units_header | boolean | **Optional** | `false` Show units for all header entities
-| entities | list<Object> | **Optional** | `[]` List of fitbit sensors to display in the body
-| max | string | **Optional** | `100` Global maximum value for body entities
+<img src='https://raw.githubusercontent.com/ljmerza/light-entity-card/master/card.png' />
 
 
-<h2>header_entities options</h2>
-
-| Name | Type | Requirement | `Default` Description
-| ---- | ---- | ------- | -----------
-| entity | string | **Required** | Name of entitiy
-| icon_color | string | **Optional** | color of icon next to entity (can be color name or hex value)
-| show_units | boolean | **Optional** | `false` show units next to entity value (show_units_header overrides this)
-| units | string | **Optional** | override default units with custom units
-
-<h2>entities options</h2>
-
-| Name | Type | Requirement | `Default` Description
-| ---- | ---- | ------- | -----------
-| entity | string | **Required** | Name of entitiy
-| max | number | **Optional** | `global max value` override global maxiumum value for this entity
-| color_stops | list | **Optional** | `--primary-color` custom colors for percent circle
-| show_units | boolean | **Optional** | `false` show units next to value
-| units | string | **Optional** | override default units with custom units
-
-
-<h2>Configuration</h2>
-
-Download `fitbit-card.js` from the [latest release](https://github.com/ljmerza/fitbit-card/releases/latest/) and upload it your /www folder of your Home Assistant config directory.
-
-In your ui-lovelace.yaml
+## Installation through [HACS](https://github.com/custom-components/hacs)
+---
+Add the following to resources in your lovelace config:
 
 ```yaml
 resources:
-  - url: /local/fitbit-card.js?track=true
-    type: js
+  - url: /community_plugin/fitbit-card/fitbit-card.js
 ```
 
-Add the custom card to views:
-
+## Configurations:
+---
 ```yaml
 views:
   - type: 'custom:fitbit-card'
@@ -89,3 +40,49 @@ views:
       - entity: sensor.resting_heart_rate
         show_units: true
 ```
+
+## Options
+---
+| Name | Type | Requirement | `Default value` Description
+| ---- | ---- | ------- | -----------
+| type | string | **Required** | `custom:fitbit-card`
+| battery_entity | string | **Optional** | Battery entity to show battery status
+| header | boolean | **Optional** | `true` Show/hide header
+| header_entities | list | **Optional** | `[]` List of fitbit sensors to display in the header
+| show_units_header | boolean | **Optional** | `false` Show units for all header entities
+| entities | list | **Optional** | `[]` List of fitbit sensors to display in the body
+| max | string | **Optional** | `100` Global maximum value for body entities
+
+
+### header_entities options
+
+| Name | Type | Requirement | `Default value` Description
+| ---- | ---- | ------- | -----------
+| entity | string | **Required** | Name of entitiy
+| icon_color | string | **Optional** | color of icon next to entity (can be color name or hex value)
+| show_units | boolean | **Optional** | `false` show units next to entity value (show_units_header overrides this)
+| units | string | **Optional** | override default units with custom units
+
+### entities options
+
+| Name | Type | Requirement | `Default value` Description
+| ---- | ---- | ------- | -----------
+| entity | string | **Required** | Name of entitiy
+| max | number | **Optional** | `global max value` override global maxiumum value for this entity
+| color_stops | list | **Optional** | `--primary-color` custom colors for percent circle
+| show_units | boolean | **Optional** | `false` show units next to value
+| units | string | **Optional** | override default units with custom units
+
+---
+
+Enjoy my card? Help me out for a couple of :beers: or a :coffee:!
+
+[![coffee](https://www.buymeacoffee.com/assets/img/custom_images/black_img.png)](https://www.buymeacoffee.com/JMISm06AD)
+
+
+[commits-shield]: https://img.shields.io/github/commit-activity/y/ljmerza/light-entity-card.svg?style=for-the-badge
+[commits]: https://github.com/ljmerza/light-entity-card/commits/master
+[license-shield]: https://img.shields.io/github/license/ljmerza/light-entity-card.svg?style=for-the-badge
+[maintenance-shield]: https://img.shields.io/badge/maintainer-Leonardo%20Merza%20%40ljmerza-blue.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/ljmerza/light-entity-card.svg?style=for-the-badge
+[releases]: https://github.com/ljmerza/light-entity-card/releases
