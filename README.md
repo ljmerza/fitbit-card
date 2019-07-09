@@ -11,6 +11,7 @@ Add the following to resources in your lovelace config:
 ```yaml
 resources:
   - url: /community_plugin/fitbit-card/fitbit-card.js
+    type: js
 ```
 
 ## Configurations:
