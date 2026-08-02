@@ -75,14 +75,14 @@ entities:
 
 ---
 
-Enjoy my card? Help me out for a couple of :beers: or a :coffee:!
+Enjoy my work? Help me out for a couple of :beers: or a :coffee:!
 
-[![coffee](https://www.buymeacoffee.com/assets/img/custom_images/black_img.png)](https://www.buymeacoffee.com/JMISm06AD)
+<a href="https://www.buymeacoffee.com/JMISm06AD"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 
-[commits-shield]: https://img.shields.io/github/commit-activity/y/ljmerza/light-entity-card.svg?style=for-the-badge
-[commits]: https://github.com/ljmerza/light-entity-card/commits/master
-[license-shield]: https://img.shields.io/github/license/ljmerza/light-entity-card.svg?style=for-the-badge
+[commits-shield]: https://img.shields.io/github/commit-activity/y/ljmerza/fitbit-card.svg?style=for-the-badge
+[commits]: https://github.com/ljmerza/fitbit-card/commits/master
+[license-shield]: https://img.shields.io/github/license/ljmerza/fitbit-card.svg?style=for-the-badge
 [maintenance-shield]: https://img.shields.io/badge/maintainer-Leonardo%20Merza%20%40ljmerza-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/ljmerza/light-entity-card.svg?style=for-the-badge
-[releases]: https://github.com/ljmerza/light-entity-card/releases
+[releases-shield]: https://img.shields.io/github/release/ljmerza/fitbit-card.svg?style=for-the-badge
+[releases]: https://github.com/ljmerza/fitbit-card/releases
