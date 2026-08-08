@@ -1,4 +1,14 @@
 # Fitbit Card for Home Assistant
+
+<p align="center">
+<img src="https://img.shields.io/github/stars/ljmerza/fitbit-card?style=for-the-badge&label=Stars&color=orange" alt="Stars">
+<a href="https://github.com/ljmerza/fitbit-card/releases"><img src="https://img.shields.io/github/downloads/ljmerza/fitbit-card/total?style=for-the-badge&label=Downloads&color=blue" alt="Downloads"></a>
+<a href="https://github.com/ljmerza/fitbit-card/releases/latest"><img src="https://img.shields.io/github/v/release/ljmerza/fitbit-card?style=for-the-badge&color=purple" alt="Version"></a>
+</p>
+
+<p align="center">
+<a href="https://www.buymeacoffee.com/JMISm06AD"><img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee"></a>
+</p>
 Show your Fitbit stats
 
 <img src='https://raw.githubusercontent.com/ljmerza/fitbit-card/master/card.jpg' />
@@ -65,17 +75,3 @@ entities:
 | color_stops | list | **Optional** | `--primary-color` custom colors for percent circle
 | show_units | boolean | **Optional** | `false` show units next to value
 | units | string | **Optional** | override default units with custom units
-
----
-
-Enjoy my work? Help me out for a couple of :beers: or a :coffee:!
-
-<a href="https://www.buymeacoffee.com/JMISm06AD"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174"></a>
-
-
-[commits-shield]: https://img.shields.io/github/commit-activity/y/ljmerza/fitbit-card.svg?style=for-the-badge
-[commits]: https://github.com/ljmerza/fitbit-card/commits/master
-[license-shield]: https://img.shields.io/github/license/ljmerza/fitbit-card.svg?style=for-the-badge
-[maintenance-shield]: https://img.shields.io/badge/maintainer-Leonardo%20Merza%20%40ljmerza-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/ljmerza/fitbit-card.svg?style=for-the-badge
-[releases]: https://github.com/ljmerza/fitbit-card/releases
